@@ -12,46 +12,73 @@ public_blockchain/
 
 ## Prerequisites
 
-- **Node.js** v18+ and **npm**
+- **Node.js** v22.10 and **npm**
 
 ## Quick Start
 
 You need **3 terminals** to run the full stack.
 
-### Terminal 1 — Local Blockchain
+### 1. Start the Local Blockchain
+
+Open a terminal and run:
 
 ```bash
-cd certificate-validator-simple
-npm install
 npm run node
 ```
 
-This starts a Hardhat blockchain at `http://127.0.0.1:8545`. Keep this terminal running.
+This starts a local Hardhat blockchain node at `http://127.0.0.1:8545`. It will display a list of test accounts with their private keys. **Keep this terminal running.**
 
-### Terminal 2 — Deploy Contract & Start API Server
+### 2. Compile the Smart Contract
+
+Open a **second terminal** and run:
 
 ```bash
-cd certificate-validator-simple
 npm run compile
+```
+
+This compiles `contracts/CertificateContract.sol` and generates the ABI artifacts in the `artifacts/` folder.
+
+### 3. Deploy the Smart Contract
+
+In the same second terminal:
+
+```bash
 npm run deploy
 ```
 
-Copy the deployed contract address from the output, then create a `.env` file:
+This deploys the contract to your local blockchain. The output will show the deployed contract address, e.g.:
+
+```
+CertificateContract deployed to: 0x5FbDB2315678afecb367f032d93F642f64180aa3
+```
+
+### 4. Configure Environment Variables
+
+Create or update the `.env` file in the project root:
 
 ```env
 PORT=8001
 ETH_RPC_URL=http://127.0.0.1:8545
 PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-CONTRACT_ADDRESS=<paste the address from deploy output>
+CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
 ```
 
-Then start the API:
+- **PORT** - The port the API server will listen on
+- **ETH_RPC_URL** - The blockchain RPC endpoint (local Hardhat node)
+- **PRIVATE_KEY** - A private key from the Hardhat test accounts (the first one is used by default)
+- **CONTRACT_ADDRESS** - The address from the deploy step output
+
+### 5. Start the API Server
 
 ```bash
 npm start
 ```
 
-Backend is now running at `http://localhost:8001`.
+You should see:
+
+```
+Server running on port 8001
+```
 
 ### Terminal 3 — Frontend
 
@@ -63,29 +90,18 @@ npm run dev
 
 Frontend is now running at `http://localhost:5173`.
 
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Health check |
-| POST | `/api/certificate` | Create a certificate |
-| GET | `/api/certificate/:id` | Get a certificate by ID |
-| POST | `/api/certificate/verify` | Verify a certificate |
-| PATCH | `/api/certificate/:id` | Update a certificate |
-| DELETE | `/api/certificate/:id` | Revoke a certificate |
-
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | React, Vite, Tailwind CSS |
-| Backend | Node.js, Express, ethers.js |
+| Layer      | Technology                        |
+| ---------- | --------------------------------- |
+| Frontend   | React, Vite, Tailwind CSS         |
+| Backend    | Node.js, Express, ethers.js       |
 | Blockchain | Solidity, Hardhat (local network) |
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---------|----------|
-| Connection refused on port 8545 | Make sure `npm run node` is running in Terminal 1 |
+| Problem                                        | Solution                                                             |
+| ---------------------------------------------- | -------------------------------------------------------------------- |
+| Connection refused on port 8545                | Make sure `npm run node` is running in Terminal 1                    |
 | Contract call errors after restarting the node | Re-deploy (`npm run deploy`) and update `CONTRACT_ADDRESS` in `.env` |
-| Frontend can't reach API | Ensure the backend is running on port 8001 |
+| Frontend can't reach API                       | Ensure the backend is running on port 8001                           |
